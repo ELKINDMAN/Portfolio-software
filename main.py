@@ -6,8 +6,8 @@ from checkscript_oop import *
 if __name__ == "__main__":
     user = Innate
 
-    user.input_details()
-    role = user.select_role()
+    user.input_details(user)
+    role = user.select_role(user)
 
     if role == 'User':
         user  = User(user.name, user.age, user.origin)

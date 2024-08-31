@@ -6,11 +6,17 @@ class Innate:
 
     def input_details(self):
         self.name = input('What is your name? ')
-        try:
-            self.age = int(input('How old are you? '))
-        except ValueError:
-            print('Enter a valid age next time!')
+
+        for x in range(3):
+            try:
+                self.age = input('ENter a valid age: ')
+                break
+            except ValueError:
+                print('That is an invalid input try again')
+        else:
+            print('Too many attempts, Exiting...')
             exit()
+
         self.origin = input('Where are you from? ')
 
     def select_role(self):
