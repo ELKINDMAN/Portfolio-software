@@ -1,7 +1,7 @@
 """
     The main console 
 """
-from checkscript_oop import *
+from checkscript_oop import Innate, Admin, User
 
 if __name__ == "__main__":
     user = Innate
@@ -21,6 +21,13 @@ if __name__ == "__main__":
             admin.login()
         elif access_type == 2:
             admin.signup()
+            """
+           HINT -->  expected: flask implementation
+
+            @app.route('/Dashboard', methods=['GET', 'POST'])
+            def admin():
+                return render_template('Dashboard.html')
+            """
 
     elif role =='Others':
         print('This section is still in development.')
