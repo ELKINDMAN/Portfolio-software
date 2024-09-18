@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Uninfo</title>
+	</head>
+	<body>
+		<div>
+			<p>welcome to the Admin panel, {{name}}</p>
+			<p><a href="/">Feeds Page</a></p>
+			<a href="logout">Logout</a>
+		</div>
+		<div>
+			<div>
+				<p>Publish New info</p>
+				<form>
+					<input name="title" type="text" placeholder="Title/Headline" required/>
+					<input name="content" type="textarea" placeholder="Share your information"/>
+					<input name="image" type="file" placeholder="Upload image/file" accept=".jpeg, .png, .pdf, .jpg, .xls, .docx, .docs, .mp4, .mp3, .webp," multiple>
+			</div>
+			<div>
+				<p>Delete info</p>
+			</div>
+	</body>

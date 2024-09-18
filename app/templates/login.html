@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta  name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>GETINFO</title>
+    </head>
+    </head>
+    <body>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+                color: #333;
+            }
+            header {
+                background-color: #001f3f; /* Deep Navy Blue */
+                color: #ffffff;
+                padding: 1em 0;
+                text-align: center;
+            }
+            nav {
+                background-color: #39d77e; /* Light Tech Green */
+                display: flex;
+                justify-content: center;
+                padding: 0.5em 0;
+            }
+            nav a {
+                color: #ffffff;
+                margin: 0 1em;
+                text-decoration: none;
+                font-weight: bold;
+            }
+            nav a:hover {
+                text-decoration: underline;
+            }
+            .container {
+                width: 80%;
+                margin: 2em auto;
+                background-color: #ffffff;
+                padding: 2em;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            footer {
+                background-color: #001f3f;
+                color: #ffffff;
+                text-align: center;
+                padding: 1em 0;
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Kampus Konnect</h1>
+            <p>Your Source for University News</p>
+        </header>
+        <nav>
+            <a href="#news">News</a>
+            <a href="#events">Events</a>
+            <a href="#contact">Contact</a>
+        </nav>
+	    <p>Go back to<a href="/">Feeds</a></p>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <p>{{msg}}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <h1>Media Admin Page</h1>
+        <p>Login</p>
+        <form action="#" method="post">
+            <input type="text" placeholder="Userame" name="username" required> <br>
+            <input type="password" placeholder="password" name="password" required> <br>
+            <button type="submit">Login</button> <br>
+        </form>
+        <a href="signup">New here? signup</a>
+    </body>
+</html>
