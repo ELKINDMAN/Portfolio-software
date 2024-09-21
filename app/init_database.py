@@ -1,5 +1,5 @@
 """
-Model database, app instance initialization and creation
+    Model database, app instance initialization and creation
 """
 from importNrun import app, db
 from models import Admin, Post
@@ -7,3 +7,9 @@ with app.app_context():
     db.create_all()
 
     print('Database Successfully created!')
+
+    all_admin = Admin.query.all()
+    if all_admin:
+        print('Admin Present in database')
+        for admin in all_admin:
+            print(f'Name: {admin.name},\n username: {admin.username},\n email: {admin.email}, \n password: {admin.Hashed_password}')

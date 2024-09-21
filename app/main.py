@@ -75,13 +75,11 @@ def login():
 
 
 # ---> dashboard
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-#    if current_user.is_authenticated:
     return render_template('Dashboard.html', name=current_user.name)
- #   else:
-  #      return redirect(url_for('login'))
+
 
 
 
@@ -94,6 +92,24 @@ def logout():
     return redirect(url_for('login'))
 
 
+# ---> create post
+@app.route('/create', methods=['GET', 'POST'])
+@login_required
+def create_post():
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        image = request.form['image']
+        document = request.form['document']
+        #check for title
+
+        content_exists = Post.query.filter_by(content=content).first()
+        if content_exists:
+            flash('News article already published')
+            return redirect(url_for('create'))
+            
+
+            
 if __name__ == '__main__':
     app.run(debug=True)
 
