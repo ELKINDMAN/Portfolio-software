@@ -14,11 +14,16 @@
 		<div>
 			<div>
 				<p>Publish New info</p>
-				<form>
+				<form action="{{ url_for('dashboard') }}" method="POST" enctype="multipart/form-data">
 					<input name="title" type="text" placeholder="Title/Headline" required><br>
 					<textarea name="content" placeholder="Share your information" required></textarea><br>
-					<input name="image" type="file" placeholder="Upload image/file" accept=".jpeg, .png, .pdf, .jpg, .xls, .docx, .docs, .mp4, .mp3, .webp," multiple><br>
-					<button type="submit">Post</button>
+					<!--		<input name="image" type="file" placeholder="Upload image/file" accept=".jpeg, .png, .pdf, .jpg, .xls, .docx, .docs, .mp4, .mp3, .webp," multiple><br> -->
+					<label for="image">Upload Image: </label>
+					<input type="file" name="image" accept="image/*">
+
+					<label for="document">Upload Document: </label>
+					<input type="file" name="document" accept=".pdf,.xlsx,.xls">
+					<button type="submit">Publish Post</button>
 				</form>
 			</div>
 			<div>
