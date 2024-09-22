@@ -3,9 +3,10 @@
 '''
 #from flask_sqlalchemy import SQLAlchemy
 from flask import render_template, redirect, url_for, flash, request
-
+import os
 
 from models import Admin, Post
+from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from importNrun import db, app
@@ -78,6 +79,49 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        image = request.files.get('image')
+        document = request.files.get('document')
+
+        content_exists = Post.query.filter_by(content=content).first()
+        if content_exists:
+            flash('News article with same content already published', 'danger')
+            return redirect(url_for('dashborad'))
+        
+        image_url = None
+        doc_url = None
+        
+        #If an image is uploaded
+        if image:
+            image_filename = secure_filename(image.filename)
+            image_path = os.path.join(app.root_path, 'static/images', image_filename)
+            image.save(image_path)
+            image_url = url_for('static', filename=f'images/{image_filename}')
+
+        if document:
+            doc_filename = secure_filename(document.filename)
+            doc_path = os.path.join(app.root_path, 'static/docs', doc_filename)
+            document.save(doc_path)
+            doc_url = url_for('static', filename=f'docs/{doc_filename}')
+
+        #create the new post object
+        new_post = Post(title=title, content=content, image_url=image_url,
+                document_url=doc_url, admin_id=current_user.id)
+        # add to database
+        try:
+            db.session.add(new_post)
+            db.session.commit()
+            flash('Post created successfully!', 'success')
+            return redirect(url_for('dashboard'))
+        except Exception as e:
+            db.session.rollback()
+            flash('Error creating post. Try again.', 'danger')
+            return redirect(url_for('dashboard'))
+
+# IF GET request, dispaly pots and admin options (create/delete)
+#    posts = Post.query.order_by(Post.id.desc()).all()
     return render_template('Dashboard.html', name=current_user.name)
 
 
@@ -92,22 +136,6 @@ def logout():
     return redirect(url_for('login'))
 
 
-# ---> create post
-@app.route('/create', methods=['GET', 'POST'])
-@login_required
-def create_post():
-    if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
-        image = request.form['image']
-        document = request.form['document']
-        #check for title
-
-        content_exists = Post.query.filter_by(content=content).first()
-        if content_exists:
-            flash('News article already published')
-            return redirect(url_for('create'))
-            
 
             
 if __name__ == '__main__':
