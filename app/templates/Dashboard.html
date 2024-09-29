@@ -3,17 +3,18 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Uninfo</title>
+		<title>Uninfo- Admin Panel</title>
 	</head>
 	<body>
 		<div>
 			<p>welcome to the Admin panel, {{name}}</p>
-			<p><a href="/">Feeds Page</a></p>
-			<a href="logout">Logout</a>
+			<p><a href="/"> Feeds Page</a></p>
+			<a href="{{ url_for('logout') }}">Logout</a>
 		</div>
+
 		<div>
 			<div>
-				<p>Publish New info</p>
+				<p>Publish New Info</p>
 				<form action="{{ url_for('dashboard') }}" method="POST" enctype="multipart/form-data">
 					<input name="title" type="text" placeholder="Title/Headline" required><br>
 					<textarea name="content" placeholder="Share your information" required></textarea><br>
@@ -26,7 +27,23 @@
 					<button type="submit">Publish Post</button>
 				</form>
 			</div>
-			<div>
-				<p>Delete info</p>
+			{% for post in posts %}
+			<div class="post-preview">
+				<h2>{{ post.title }}</h2>
+				<p>{{ post.content[:200] }}...</p>
+
+				{% if post.image_url %}
+				<img src="{{ post.image_url }}" alt="Post Image" style="max-width: 200px;">
+				{% endif %}
+
+				{% if document_url %}
+				<p><a href="{{ post.document_url }}">Download Document</a></p>
+				{% endif %}
+
+				<form action="{{url_for('dashboard') }}" method="POST">
+					<button type="submit", class="btn btn-danger">Delete</button>
+				</form>																			
 			</div>
+			{% endfor %}
 	</body>
+</html>

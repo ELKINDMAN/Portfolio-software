@@ -19,4 +19,4 @@ with app.app_context():
     if posts:
         print('Posts in database\n Latests\n')
         for post in posts:
-            print(f'Headline: {post.title}\n{post.content}')
+            print(f'Headline: {post.title}\n\t{post.content}\n\n')
