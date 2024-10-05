@@ -1,16 +1,65 @@
-'''
-    main program logic
-'''
-#from flask_sqlalchemy import SQLAlchemy
 from flask import render_template, redirect, url_for, flash, request
 import os
-
-from models import Admin, Post
 from werkzeug.utils import secure_filename
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from models import Admin, Post
+from flask_login import login_required, current_user, LoginManager, login_user, logout_user
 from importNrun import db, app
 
+
+# Helper function for creating a new post
+def create_post(title, content, image, document):
+    # Check if a post with the same content already exists
+    content_exists = Post.query.filter_by(content=content).first()
+    if content_exists:
+        flash('News article with same content already published', 'danger')
+        return False
+
+    # Handle image upload
+    image_url = None
+    if image:
+        image_filename = secure_filename(image.filename)
+        image_path = os.path.join(app.root_path, 'static/images', image_filename)
+        image.save(image_path)
+        image_url = url_for('static', filename=f'images/{image_filename}')
+
+    # Handle document upload
+    doc_url = None
+    if document:
+        doc_filename = secure_filename(document.filename)
+        doc_path = os.path.join(app.root_path, 'static/docs', doc_filename)
+        document.save(doc_path)
+        doc_url = url_for('static', filename=f'docs/{doc_filename}')
+
+    # Create and save new post
+    new_post = Post(title=title, content=content, image_url=image_url,
+                    document_url=doc_url, admin_id=current_user.id)
+    try:
+        db.session.add(new_post)
+        db.session.commit()
+        flash('Post created successfully!', 'success')
+        return True
+    except Exception as e:
+        db.session.rollback()
+        flash('Error creating post. Try again.', 'danger')
+        return False
+
+
+# Helper function for deleting a post
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.admin_id != current_user.id:
+        flash('You do not have the permission to delete this post', 'danger')
+        return False
+
+    try:
+        db.session.delete(post)
+        db.session.commit()
+        flash(f'"{post.title}" has been deleted.', 'success')
+        return True
+    except Exception as e:
+        db.session.rollback()
+        flash('Error in deleting post!', 'danger')
+        return False
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -23,7 +72,8 @@ def load_user(admin_id):
 # ---> home/landing page
 @app.route('/')
 def home():
-    return render_template('home.html')
+    news = Post.query.order_by(Post.id.desc()).all()
+    return render_template('home.html', news=news)
 
 
 # ---> signup
@@ -74,75 +124,32 @@ def login():
 
     return render_template('login.html')
 
-
 # ---> dashboard
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
     if request.method == 'POST':
-# ----> create_post logic
+        # Handle post creation
         if 'title' in request.form and 'content' in request.form:
             title = request.form['title']
             content = request.form['content']
             image = request.files.get('image')
             document = request.files.get('document')
 
-            content_exists = Post.query.filter_by(content=content).first()
-            if content_exists:
-               flash('News article with same content already published', 'danger')
-               return redirect(url_for('dashborad'))
-        
-            image_url = None
-            doc_url = None
-        
-        #If an image is uploaded
-            if image:
-                image_filename = secure_filename(image.filename)
-                image_path = os.path.join(app.root_path, 'static/images', image_filename)
-                image.save(image_path)
-                image_url = url_for('static', filename=f'images/{image_filename}')
-
-            if document:
-                doc_filename = secure_filename(document.filename)
-                doc_path = os.path.join(app.root_path, 'static/docs', doc_filename)
-                document.save(doc_path)
-                doc_url = url_for('static', filename=f'docs/{doc_filename}')
-
-        #create the new post object
-                new_post = Post(title=title, content=content, image_url=image_url,
-                document_url=doc_url, admin_id=current_user.id)
-        # add to database
-            try:
-                db.session.add(new_post)
-                db.session.commit()
-                flash('Post created successfully!', 'success')
+            if create_post(title, content, image, document):
                 return redirect(url_for('dashboard'))
-            except Exception as e:
-                db.session.rollback()
-                flash('Error creating post. Try again.', 'danger')
-                return redirect(url_for('dashboard'))
-# ----->
+
+        # Handle post deletion
         elif 'delete_post_id' in request.form:
             post_id = request.form['delete_post_id']
-            post = Post.query.get_or_404(post_id)
-
-            if post.admin_id != current_user.id:
-                flash('You do not have the permission to delete this post', 'danger')
+            if delete_post(post_id):
                 return redirect(url_for('dashboard'))
 
-            try:
-                db.session.delete(post)
-                db.session.commit()
-                flash(f'"{post.title}" has been deleted.', 'success')
-            except Exception as e:
-                db.session.rollback()
-                flash('Error in deleting post!', 'danger')
-                return redirect(url_for('dashboard'))
-
-
-# IF GET request, dispaly pots and admin options (create/delete)
+    # IF GET request, display posts and admin options (create/delete)
     posts = Post.query.order_by(Post.id.desc()).all()
     return render_template('Dashboard.html', name=current_user.name, posts=posts)
+
+
 # ---> logout
 @app.route('/logout')
 @login_required
@@ -152,13 +159,5 @@ def logout():
     return redirect(url_for('login'))
 
 
-
-            
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
-
