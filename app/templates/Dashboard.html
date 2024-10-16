@@ -4,20 +4,22 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Uninfo- Admin Panel</title>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/Dashboard.css') }}">
 	</head>
 	<body>
-		<div>
-			<p>welcome to the Admin panel, {{name}}</p>
-			<p><a href="/"> Feeds Page</a></p>
+		<div class="topdiv">
+			<h1>welcome to the Admin panel, {{name}}</h1>
+			<a href="/"> Feeds Page</a>
 			<a href="{{ url_for('logout') }}">Logout</a>
 		</div>
 
-		<div>
-			<div>
-				<p>Publish New Info</p>
+		<div class="cont">
+			<div class="left">
+				<h2>Create News Article</h2>
+				<p> To post News, fill out the necessary fields below</p>
 				<form action="{{ url_for('dashboard') }}" method="POST" enctype="multipart/form-data">
-					<input style="padding: 12px; margin: 10px; border: 0px 0px 2px 0px; font-family: cursive;" name="title" type="text" placeholder="Title/Headline" required><br>
-					<textarea style="height:300px; width: 400px; font-family: cursive;" name="content" placeholder="Share your information" required></textarea><br>
+					<input name="title" type="text" placeholder="Title/Headline" required><br>
+					<textarea name="content" placeholder="Share your information" required></textarea><br>
 					<!--		<input name="image" type="file" placeholder="Upload image/file" accept=".jpeg, .png, .pdf, .jpg, .xls, .docx, .docs, .mp4, .mp3, .webp," multiple><br> -->
 					<label for="image">Upload Image: </label>
 					<input type="file" name="image" accept="image/*">
@@ -28,7 +30,7 @@
 				</form>
 			</div>
 			{% for post in posts %}
-			<div class="post-preview">
+			<div class="right">
 				<h2>{{ post.title }}</h2>
 				<p>{{ post.content[:200] }}...</p>
 

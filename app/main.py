@@ -150,6 +150,15 @@ def dashboard():
     return render_template('Dashboard.html', name=current_user.name, posts=posts)
 
 
+@app.route('/post/<int:id>')
+def news_detail(id):
+    # Fetch the specific news post using the provided 'id'
+    post_item = Post.query.get_or_404(id)
+
+    # Render a template for the news detail page
+    return render_template('news_detail.html', post=post_item)
+
+
 # ---> logout
 @app.route('/logout')
 @login_required

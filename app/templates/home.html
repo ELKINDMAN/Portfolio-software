@@ -1,38 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Uninfo- Feeds</title>
-	</head>
-	<body>
-		<h1>Latest</h1>
-		{% for n in news %}
-		<div class="post-preview">
-			<h2>{{ n.title }}</h2>
-			<p>{{ n.content[:200] }}...</p>
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uninfo - Feeds</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/home.css') }}">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <input type="text" placeholder="Search..." class="search-bar">
+            <a href="#">Top Stories</a>
+            <a href="#contact">Contact Us</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Events Section (1/4th left for web, reel for mobile) -->
+            <section class="events">
+                <h1>Events</h1>
+                <div class="events-carousel">
+                    {% for e in events %}
+                    <div class="events-preview">
+                        <h2>{{ e.title }}</h2>
+                        <p>{{ e.content[:100] }}...</p>
+                        {% if e.image_url %}
+                        <img src="{{ e.image_url }}" alt="Event Image">
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Latest News Section (3/4th right) -->
+            <section class="news">
+                <h1>Latest</h1>
+                {% for n in news %}
+                <a href="{{ url_for('news_detail', id=n.id) }}" class="post-preview">
+                    <h2>{{ n.title }}</h2>
+                    <p>{{ n.content[:100] }}...Read more</p>
+
+                    <!-- Multiple images loop -->
+                    <div class="image-container">
 			{% if n.image_url %}
-			<img src="{{ post.image_url }}" alt="Post Image" style="max-width: 200px;">
-			{% endif %}
+				{% for imgs in n.image_url %}
+				<img src="{{ n.image_url }}" alt="Post Image">
+				{% endfor %}
+                        {% endif %}
+                    </div>
 
-			{% if n.document_url %}
-			<p><a href="{{ post.document_url }}">Download Document</a></p>
-			{% endif %}                                               
-		</div>
-		{% endfor %}
+                    {% if n.document_url %}
+                    <p><a href="{{ n.document_url }}">Download Document</a></p>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </section>
+        </div>
+    </main>
 
-		<h1>Events</h1>
-		{% for e in events %}
-		<div class="Events-preview">
-			<h2>{{ e.title }}</h2>
-			<p>{{ e.content[:100] }}...</p>
+    <footer>
+        <p>Contact us at info@uninfo.com</p>
+    </footer>
+</body>
 
-			{% if e.image_url %}
-			<img src="{{ e.image_url }}" alt="Post Image" style="max-width: 200px;">
-			{% endif %}                                              
-		</div>
-		{% endfor %}
-
-	</body>
 </html>
