@@ -24,5 +24,5 @@ class Post(db.Model):
     title = db.Column(db.String(256), unique=True, nullable=False)
     content = db.Column(db.Text, nullable=False)
     admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'), nullable=False)
-    image_url = db.Column(db.String(512), nullable=True)
-    document_url = db.Column(db.String(512), nullable=True)
+    image_urls = db.Column(db.JSON, nullable=True)
+    document_urls = db.Column(db.JSON, nullable=True)

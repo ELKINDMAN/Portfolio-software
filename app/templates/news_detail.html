@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ post.title }}</title>
+    <title>{{ news.title }}</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/home.css') }}">
 </head>
 <body>
@@ -12,28 +12,28 @@
             <a href='/'>Back to Feeds</a>
         </nav>
     </header>
-{% for x in post %}
+
     <main>
         <div class="container">
             <article>
-                <h1>{{ x.title }}</h1>
-                <p>{{ x.content }}</p>
+                <h1>{{ news.title }}</h1>
+                <p>{{ news.content }}</p>
 
                 <!-- Display multiple images if any -->
                 <div class="image-container">
-                    {% if x.image_url %}
-                    <img src="{{ image_url }}" alt="News Image">
+                    {% if news.image_url %}
+                    <img src="{{ news.image_url }}" alt="News Image">
                     {% endif %}
                 </div>
 
                 <!-- Show attached document if any -->
-                {% if post.document_url %}
-                <p><a href="{{ post.document_url }}">Download Document</a></p>
+                {% if news.document_url %}
+                <p><a href="{{ news.document_url }}">Download Document</a></p>
                 {% endif %}
             </article>
         </div>
     </main>
-    {% endfor %}
+
 
     <footer>
         <p>Contact us at info@uninfo.com</p>

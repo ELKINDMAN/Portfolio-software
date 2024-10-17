@@ -6,33 +6,37 @@ from flask_login import login_required, current_user, LoginManager, login_user, 
 from importNrun import db, app
 
 
-# Helper function for creating a new post
-def create_post(title, content, image, document):
+# Helper function for creating a new post with multiple images
+def create_post(title, content, images, documents):
     # Check if a post with the same content already exists
     content_exists = Post.query.filter_by(content=content).first()
     if content_exists:
         flash('News article with same content already published', 'danger')
         return False
+# Handle image uploads
+    image_urls = []
+    if images:
+        for image in images:
+            if image:
+                image_filename = secure_filename(image.filename)
+                image_path = os.path.join(app.root_path, 'static/images', image_filename)
+                image.save(image_path)
+                image_url = url_for('static', filename=f'images/{image_filename}')
+                image_urls.append(image_url)
 
-    # Handle image upload
-    image_url = None
-    if image:
-        image_filename = secure_filename(image.filename)
-        image_path = os.path.join(app.root_path, 'static/images', image_filename)
-        image.save(image_path)
-        image_url = url_for('static', filename=f'images/{image_filename}')
-
-    # Handle document upload
-    doc_url = None
-    if document:
-        doc_filename = secure_filename(document.filename)
-        doc_path = os.path.join(app.root_path, 'static/docs', doc_filename)
-        document.save(doc_path)
-        doc_url = url_for('static', filename=f'docs/{doc_filename}')
-
-    # Create and save new post
-    new_post = Post(title=title, content=content, image_url=image_url,
-                    document_url=doc_url, admin_id=current_user.id)
+    # Handle document uploads
+    doc_urls = []  # Corrected variable name to plural (as it should handle multiple documents)
+    if documents:
+        for document in documents:
+            if document:
+                doc_filename = secure_filename(document.filename)
+                doc_path = os.path.join(app.root_path, 'static/docs', doc_filename)
+                document.save(doc_path)
+                doc_url = url_for('static', filename=f'docs/{doc_filename}')
+                doc_urls.append(doc_url)  # Appending to the `doc_urls` list
+    # Create and save new post with multiple image URLs in JSON format
+    new_post = Post(title=title, content=content, image_urls=image_urls,
+                    document_urls=doc_urls, admin_id=current_user.id)
     try:
         db.session.add(new_post)
         db.session.commit()
@@ -61,19 +65,22 @@ def delete_post(post_id):
         flash('Error in deleting post!', 'danger')
         return False
 
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
 
 @login_manager.user_loader
 def load_user(admin_id):
     return Admin.query.get(int(admin_id))
 
+
 # ---> home/landing page
 @app.route('/')
 def home():
-    news = Post.query.order_by(Post.id.desc()).all()
-    return render_template('home.html', news=news)
+    post = Post.query.order_by(Post.id.desc()).all()
+    return render_template('home.html', post=post)
 
 
 # ---> signup
@@ -85,21 +92,22 @@ def signup():
         email = request.form['email']
         password = request.form['password']
 
-#Datacheck ---->
+        # Data check
         admin_exists = Admin.query.filter((Admin.name == name) | (Admin.email == email)).first()
         if admin_exists:
             flash('Email or Media Admin already exists!', 'danger')
             return redirect(url_for('signup'))
 
-#Create new admin
+        # Create new admin
         new_admin = Admin(name=name, username=username, email=email)
         new_admin.set_password(password)
-#Adding new_admin to database
+
+        # Adding new admin to database
         try:
             db.session.add(new_admin)
             db.session.commit()
             flash('You have successfully become a Media Admin! Please login', 'success')
-            return redirect(url_for('login.html'))
+            return redirect(url_for('login'))
         except Exception as e:
             db.session.rollback()
             flash('Error creating account. Try again.', 'danger')
@@ -117,12 +125,13 @@ def login():
 
         if user and user.check_password(password):
             login_user(user)
-            flash('Logged in successfully')
+            flash('Logged in successfully', 'success')
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid username or password', 'warning')
 
     return render_template('login.html')
+
 
 # ---> dashboard
 @app.route('/dashboard', methods=['GET', 'POST'])
@@ -133,10 +142,10 @@ def dashboard():
         if 'title' in request.form and 'content' in request.form:
             title = request.form['title']
             content = request.form['content']
-            image = request.files.get('image')
-            document = request.files.get('document')
+            images = request.files.getlist('images')  # Accept multiple image files
+            documents = request.files.getlist('documents')
 
-            if create_post(title, content, image, document):
+            if create_post(title, content, images, documents):
                 return redirect(url_for('dashboard'))
 
         # Handle post deletion
@@ -145,7 +154,7 @@ def dashboard():
             if delete_post(post_id):
                 return redirect(url_for('dashboard'))
 
-    # IF GET request, display posts and admin options (create/delete)
+    # If GET request, display posts and admin options (create/delete)
     posts = Post.query.order_by(Post.id.desc()).all()
     return render_template('Dashboard.html', name=current_user.name, posts=posts)
 
@@ -153,10 +162,10 @@ def dashboard():
 @app.route('/post/<int:id>')
 def news_detail(id):
     # Fetch the specific news post using the provided 'id'
-    post_item = Post.query.get_or_404(id)
+    news_item = Post.query.get_or_404(id)
 
     # Render a template for the news detail page
-    return render_template('news_detail.html', post=post_item)
+    return render_template('news_detail.html', news=news_item)
 
 
 # ---> logout
@@ -164,7 +173,7 @@ def news_detail(id):
 @login_required
 def logout():
     logout_user()
-    flash('You have logged out!')
+    flash('You have logged out!', 'success')
     return redirect(url_for('login'))
 
 

@@ -105,6 +105,7 @@ header {
 
 .post-preview img {
     max-width: 100%;
+    max-height: 100%;
     margin-top: 10px;
     border-radius: 4px;
 }
@@ -218,7 +219,7 @@ header {
 }
 
 .events-preview {
-    background-olor: #fff;
+    background-color: #fff;
     padding: 10px;
     margin-bottom: 15px;
     border-radius: 8px;
@@ -251,7 +252,7 @@ header {
 
 .post-preview img {
     max-width: 100%;
-    max-height: 250px;
+    max-height: 100%;
     margin-top: 10px;
     border-radius: 8px;
 }

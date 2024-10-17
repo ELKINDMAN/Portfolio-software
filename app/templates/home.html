@@ -38,17 +38,17 @@
             <!-- Latest News Section (3/4th right) -->
             <section class="news">
                 <h1>Latest</h1>
-                {% for n in news %}
+                {% for n in post %}
                 <a href="{{ url_for('news_detail', id=n.id) }}" class="post-preview">
                     <h2>{{ n.title }}</h2>
-                    <p>{{ n.content[:100] }}...Read more</p>
+                    <p>{{ n.content[:50] }}...</p>
 
                     <!-- Multiple images loop -->
                     <div class="image-container">
-			{% if n.image_url %}
-				{% for imgs in n.image_url %}
-				<img src="{{ n.image_url }}" alt="Post Image">
-				{% endfor %}
+                        {% if n.image_urls %}
+                        {% for img_url in n.image_urls %}
+                        <img src="{{ n.image_url }}" alt="Post Image">
+                        {% endfor %}
                         {% endif %}
                     </div>
 
