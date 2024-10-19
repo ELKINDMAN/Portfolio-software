@@ -21,14 +21,16 @@
 
                 <!-- Display multiple images if any -->
                 <div class="image-container">
-                    {% if news.image_url %}
-                    <img src="{{ news.image_url }}" alt="News Image">
+                    {% if news.image_urls %}
+                    {% for img_url in news.image_urls %}
+                    <img src="{{ img_url }}" alt="News Image">
+                    {% endfor %}
                     {% endif %}
                 </div>
 
                 <!-- Show attached document if any -->
-                {% if news.document_url %}
-                <p><a href="{{ news.document_url }}">Download Document</a></p>
+                {% if news.document_urls %}
+                <p><a href="{{ news.document_urls }}">Download Document</a></p>
                 {% endif %}
             </article>
         </div>
@@ -40,3 +42,4 @@
     </footer>
 </body>
 </html>
+

@@ -47,13 +47,15 @@
                     <div class="image-container">
                         {% if n.image_urls %}
                         {% for img_url in n.image_urls %}
-                        <img src="{{ n.image_url }}" alt="Post Image">
+                        <img src="{{ img_url }}" alt="Post Image">
                         {% endfor %}
                         {% endif %}
                     </div>
 
-                    {% if n.document_url %}
-                    <p><a href="{{ n.document_url }}">Download Document</a></p>
+                    {% if n.document_urls %}
+                    {% for doc in n.document_urls%}
+                    <p><a href="{{ url_for('static/docs', filename=doc) }}">Download Document</a></p>
+                    {% endfor %}
                     {% endif %}
                 </a>
                 {% endfor %}

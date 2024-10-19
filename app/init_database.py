@@ -1,11 +1,11 @@
-"""
+'''
     Model database, app instance initialization and creation
-"""
+'''
 from importNrun import app, db
 from models import Admin, Post
 with app.app_context():
-   db.drop_all()
-   print('Database dropped\ncreating new...')
+#    db.drop_all()
+#    print('Database dropped\ncreating new...')
 
    db.create_all()
    print('Database Successfully created!')
@@ -19,4 +19,4 @@ with app.app_context():
     if posts:
         print('Posts in database\n Latests\n')
         for post in posts:
-            print(f'Headline: {post.title}\n\t{post.content}\n\n')
+            print(f'Headline: {post.title}\n\t{post.content}\n\n Image-dir: {post.image_urls}')

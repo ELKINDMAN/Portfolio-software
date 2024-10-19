@@ -22,24 +22,26 @@
 					<textarea name="content" placeholder="Share your information" required></textarea><br>
 					<!--		<input name="image" type="file" placeholder="Upload image/file" accept=".jpeg, .png, .pdf, .jpg, .xls, .docx, .docs, .mp4, .mp3, .webp," multiple><br> -->
 					<label for="image">Upload Image: </label>
-					<input type="file" name="images" accept="image/*">
+					<p><input multiple type="file" accept="image/*" name="images" id="file"></p>
 
 					<label for="document">Upload Document: </label>
 					<input type="file" name="documents" accept=".pdf,.xlsx,.xls">
 					<button type="submit">Publish Post</button>
 				</form>
 			</div>
-			{% for post in posts %}
+			<!-- {% for post in posts %} -->
 			<div class="right">
 				<h2>{{ post.title }}</h2>
 				<p>{{ post.content[:200] }}...</p>
 
-				{% if post.image_url %}
-				<img src="{{ post.image_url }}" alt="Post Image" style="max-width: 200px;">
+				{% if post.image_urls %}
+				{% for img_url in post.image_urls %}
+				<img src="{{ img_url }}" alt="Post Image" style="max-width: 200px;">
+				{% endfor %}
 				{% endif %}
 
-				{% if post.document_url %}
-				<p><a href="{{ post.document_url }}">Download Document</a></p>
+				{% if post.document_urls %}
+				<p><a href="{{ post.document_urls }}">Download Document</a></p>
 				{% endif %}
 
 				<form action="{{url_for('dashboard') }}" method="POST">
@@ -47,6 +49,6 @@
 					<button type="submit", class="btn btn-danger">Delete</button>
 				</form>																			
 			</div>
-			{% endfor %}
+			<!-- {% endfor %} -->
 	</body>
 </html>
