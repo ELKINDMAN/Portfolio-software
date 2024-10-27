@@ -54,7 +54,7 @@
 
                     {% if n.document_urls %}
                     {% for doc in n.document_urls%}
-                    <p><a href="{{ url_for('static/docs', filename=doc) }}">Download Document</a></p>
+                    <p><a href="{{ doc }}">Download Document</a></p>
                     {% endfor %}
                     {% endif %}
                 </a>
