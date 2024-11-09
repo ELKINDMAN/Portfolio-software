@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import render_template, redirect, url_for, flash, request
 import os
 from werkzeug.utils import secure_filename
@@ -139,9 +140,8 @@ def forgot_password():
         admin = Admin.query.filter_by(email=email).first()  # Check if email exists
 
         if admin:
-            token = gen_token()  # Generate a token using the function
-            mail_token(email, token)  # Send email with recovery token
-            print (token)
+            url = gen_token(admin)  # Generate a token using the function
+            mail_token(email, url)  # Send email with recovery token
             flash("A password reset token has been sent to your email.", "info")
             return redirect(url_for('login'))
         else:
@@ -149,11 +149,23 @@ def forgot_password():
 
     return render_template('forgot_pass.html')  # Form with email field
 
-@app.route('/reset_password/', methods=['GET', 'POST'])
-def reset_password():
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+#check admin tied to token
+    admin = Admin.query.filter_by(reset_token=token).first()
+#check token validity
+    if not admin or admin.token_time < datetime.now():
+        flash("Token is invalid or has expired, request new token", "danger")
+        return redirect(url_for('forgot_password'))
+
+
     if request.method == 'POST':
         password = request.form["password"]
-        print("Password Updated!!")
+        admin.set_password(password)
+        admin.reset_token = None
+        admin.token_time = None
+        db.session.commit()
+        flash("Password reset successful", "success")
         return redirect(url_for('login'))
     return render_template('reset_password.html')
 # ---> dashboard

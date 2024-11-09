@@ -13,8 +13,8 @@ class Admin(UserMixin, db.Model):
     email = db.Column(db.String(100), nullable=False, unique=True)
     Hashed_password = db.Column(db.String(30), nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
-    token = db.Column(db.String(128), nullable=True)
-    token_time = db.Column(db.Datetime, nullable=True)
+    reset_token = db.Column(db.String(128), nullable=True)
+    token_time = db.Column(db.DateTime, nullable=True)
 
     def set_password(self, password):
         self.Hashed_password = generate_password_hash(password)
