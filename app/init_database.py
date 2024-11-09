@@ -4,8 +4,8 @@
 from importNrun import app, db
 from models import Admin, Post
 with app.app_context():
-#    db.drop_all()
-#    print('Database dropped\ncreating new...')
+   db.drop_all()
+   print('Database dropped\ncreating new...')
 
    db.create_all()
    print('Database Successfully created!')
