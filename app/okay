@@ -1,0 +1,17 @@
+==> main.py <==
+from flask import render_template, redirect, url_for, flash, request
+import os
+from werkzeug.utils import secure_filename
+from models import Admin, Post
+from flask_login import login_required, current_user, LoginManager, login_user, logout_user
+from importNrun import db, app, mail
+import secrets
+
+def send_token():
+     return secrets.token_url_safe(32)
+    
+def mail_token(email, token):
+    msg = message('Password Reset Request', recipients=[email])
+    msg.body = f"Your reset token is: {token}\n\nUse this to reset your password on the reset password page"
+    mail.send(msg)
+    

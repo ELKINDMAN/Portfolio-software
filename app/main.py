@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from models import Admin, Post
 from flask_login import login_required, current_user, LoginManager, login_user, logout_user
 from importNrun import db, app
-
+from mails_util import gen_token, mail_token
 
 # Helper function for creating a new post with multiple images
 def create_post(title, content, images, documents):
@@ -132,7 +132,30 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/forgot_pass', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        admin = Admin.query.filter_by(email=email).first()  # Check if email exists
 
+        if admin:
+            token = gen_token()  # Generate a token using the function
+            mail_token(email, token)  # Send email with recovery token
+            print (token)
+            flash("A password reset token has been sent to your email.", "info")
+            return redirect(url_for('login'))
+        else:
+            flash("Email not found!", "danger")
+
+    return render_template('forgot_pass.html')  # Form with email field
+
+@app.route('/reset_password/', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+        password = request.form["password"]
+        print("Password Updated!!")
+        return redirect(url_for('login'))
+    return render_template('reset_password.html')
 # ---> dashboard
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
